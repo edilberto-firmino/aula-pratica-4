@@ -1,0 +1,269 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Aula prática 4 — Seu primeiro sistema web com SQLite</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:20px}body{margin:0;background:#f1f5f9;color:#233047;font:17px/1.7 system-ui,sans-serif}a{color:#155bc7}header.hero{background:#122542;color:white;padding:54px max(24px,calc((100vw - 1060px)/2))}.eyebrow{color:#91d9cd;text-transform:uppercase;font-size:12px;letter-spacing:2px}h1{font-size:clamp(32px,5vw,52px);line-height:1.12;max-width:900px}header p{max-width:800px;color:#d2dfed}.pill{display:inline-block;border:1px solid #668298;padding:4px 12px;border-radius:20px;font-size:13px;margin:4px}main{max-width:1060px;margin:auto;padding:28px 18px 60px}nav,section{background:white;border:1px solid #dce4ef;border-radius:14px;padding:30px;margin-bottom:22px}nav ol{columns:2;padding-left:22px}nav a{display:inline-block;padding:4px 0;text-decoration:none}h2{font-size:26px;line-height:1.3;color:#122542;margin-top:0}h3{font-size:21px}code{font: .88em ui-monospace,Consolas,monospace;background:#edf2f7;border-radius:4px;padding:2px 5px}pre{margin:0;padding:20px;overflow:auto;font:14px/1.65 ui-monospace,Consolas,monospace}pre code{background:none;padding:0;font:inherit}.code{background:#101e32;color:#e5eefb;border-radius:10px;overflow:hidden;margin:20px 0}.bar{background:#20334e;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;font-size:13px}button{font:600 13px system-ui;padding:8px 12px;cursor:pointer;background:#fff;color:#163354;border:1px solid #c7d4e6;border-radius:6px}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #169e87;outline-offset:3px}.note,.flow{padding:20px;background:#eaf6f3;border-left:4px solid #177b68;border-radius:4px}.flow{text-align:center;font-weight:600;line-height:2}.table-scroll{overflow:auto}table{width:100%;border-collapse:collapse;font-size:15px}th,td{padding:12px;border-bottom:1px solid #dce4ef;text-align:left;vertical-align:top}th{background:#edf3fa}li{margin:8px 0}.back{display:inline-block;margin-top:20px;font-size:14px}.checks{padding:0;list-style:none}.checks input{width:18px;height:18px;accent-color:#177b68}#status{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#122542;color:white;padding:12px 20px;border-radius:8px;max-width:90vw}#status:empty{display:none}footer{text-align:center;color:#617289;padding:20px}@media(max-width:650px){nav ol{columns:1}nav,section{padding:20px}main{padding:16px 10px}pre{font-size:12px;padding:14px}.bar{flex-wrap:wrap}table{font-size:13px}th,td{padding:8px}}@media print{body{background:white;font-size:11pt}header.hero{background:white;color:#122542;padding:15px}header p,.eyebrow{color:#233047}nav,button,.back,#status{display:none}main{max-width:none;padding:0}section{border:0;border-radius:0;padding:16px 0}h2,h3{break-after:avoid}.code{background:white;color:black;border:1px solid #aaa}.bar{background:#eee;color:black}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:9pt}.flow,.note{background:#f5f5f5}a{color:inherit}}</style></head><body><header class="hero"><div class="eyebrow">INBEC · Aula prática 4 · Projeto web completo</div><h1>Da primeira tela ao primeiro registro no banco.</h1><p>Manual passo a passo para construir um cadastro com HTML, CSS e JavaScript, conectar a um backend e salvar dados de verdade com SQLite.</p><span class="pill">Iniciante</span><span class="pill">Python + Flask ou Node + Express</span><span class="pill">23 de outubro de 2026</span></header><main><nav id="sumario" aria-label="Roteiro da aula"><h2>Seu percurso nesta aula</h2><ol><li><a href="#objetivo">O sistema que vamos construir</a></li><li><a href="#percurso">Roteiro de trabalho</a></li><li><a href="#arquitetura">Entender frontend, backend e banco</a></li><li><a href="#ferramentas">Preparar as ferramentas</a></li><li><a href="#pastas">Criar a pasta do projeto</a></li><li><a href="#ambiente">Criar o ambiente Python</a></li><li><a href="#banco">Desenhar o banco e compreender SQL</a></li><li><a href="#backend">Escrever o backend Python completo</a></li><li><a href="#iniciar">Iniciar e testar a API antes da tela</a></li><li><a href="#html">Criar o formulário HTML</a></li><li><a href="#css">Estilizar com CSS</a></li><li><a href="#javascript">Conectar o frontend à API</a></li><li><a href="#usar">Executar o sistema completo</a></li><li><a href="#inspecionar">Ver a comunicação e inspecionar o banco</a></li><li><a href="#testes">Checklist de funcionamento e persistência</a></li><li><a href="#node">Alternativa completa: backend Node.js</a></li><li><a href="#erros">Diagnosticar os erros mais comuns</a></li><li><a href="#desafio">Atividade, desafios e entrega</a></li><li><a href="#retomar">Encerrar e retomar com segurança</a></li><li><a href="#referencias">Referências oficiais</a></li></ol><button type="button" id="print">Imprimir / salvar como PDF</button><p>Leia em sequência. Os botões Copiar copiam somente o conteúdo de cada bloco. Os códigos completos também estão disponíveis em arquivos individuais.</p></nav><section id="objetivo"><h2>01 · O sistema que vamos construir</h2><p>Hoje vamos construir um <strong>cadastro de alunos</strong> com nome, e-mail e curso. O usuário preenche o formulário, o JavaScript envia os dados ao backend e o backend grava no <strong>SQLite</strong>. Ao final, a própria página consulta e exibe os cadastros.</p><p>Este é seu primeiro sistema web completo: frontend + API + banco de dados. Não exige React, Expo nem conhecimento das práticas anteriores. Use dados fictícios durante a aula.</p><div class="note">Siga <strong>um backend por vez</strong>: Python com Flask é o percurso principal. Node.js com Express é uma alternativa completa ao final. Os dois usam os mesmos três arquivos do frontend e o mesmo formato de tabela.</div><p>Escopo: criar e consultar registros (as operações C e R de CRUD). Editar e excluir ficam como desafio orientado. Cadastro de pessoas não é cadastro de contas: não implementaremos senha ou login.</p><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="percurso"><h2>02 · Roteiro de trabalho</h2><table><tr><th>Tempo sugerido</th><th>Etapa</th><th>Evidência</th></tr><tr><td>0–20 min</td><td>Compreender as três camadas e conferir ferramentas</td><td>Explicar o caminho dos dados</td></tr><tr><td>20–45 min</td><td>Criar pastas, ambiente e backend</td><td>API retorna uma lista vazia</td></tr><tr><td>45–90 min</td><td>Construir HTML, CSS e JavaScript</td><td>Formulário envia um cadastro</td></tr><tr><td>90–120 min</td><td>Ler SQL, validar e testar erros</td><td>E-mail repetido retorna 409</td></tr><tr><td>120–150 min</td><td>Verificar persistência e personalizar</td><td>Registro continua após reiniciar</td></tr><tr><td>150–180 min</td><td>Revisar, explicar e entregar</td><td>Código e evidências</td></tr></table><p>Em dupla, alternem entre quem digita e quem confere a cada arquivo. Se dividir em dois encontros, encerre o primeiro com o formulário e o backend funcionando; no segundo, retome os testes de banco e a personalização.</p><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="arquitetura"><h2>03 · Entender frontend, backend e banco</h2><div class="flow">HTML + CSS + JS no navegador<br>↓ POST /api/alunos com JSON<br>Python/Flask <strong>ou</strong> Node/Express<br>↓ INSERT com parâmetros<br>Arquivo cadastros.db (SQLite)<br>↑ SELECT → JSON → lista na tela</div><ul><li><strong>HTML:</strong> estrutura, campos, rótulos e botões.</li><li><strong>CSS:</strong> aparência, espaçamento e adaptação ao celular.</li><li><strong>JavaScript:</strong> intercepta o envio e usa fetch para conversar com a API.</li><li><strong>Backend:</strong> recebe HTTP, valida os dados e executa SQL.</li><li><strong>SQLite:</strong> motor de banco que grava em um arquivo local. SQL é a linguagem das consultas.</li></ul><p>O navegador não abre o arquivo .db. Somente o backend acessa o banco. JSON é o formato de troca de dados, não o banco de dados. API é a interface HTTP que combina endereço, método e resposta.</p><table><tr><th>Método e rota</th><th>Entrada</th><th>Saída</th></tr><tr><td>GET /</td><td>Nenhuma</td><td>Página HTML</td></tr><tr><td>GET /api/alunos</td><td>Nenhuma</td><td>200 e uma lista JSON</td></tr><tr><td>POST /api/alunos</td><td>JSON: nome, email, curso</td><td>201 e o novo aluno; 400 para dados inválidos; 409 para e-mail repetido</td></tr></table><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="ferramentas"><h2>04 · Preparar as ferramentas</h2><p>Instale VS Code e <strong>Python 3.11 ou superior</strong>. No Windows, confira Python no terminal do VS Code (Terminal → Novo Terminal):</p><div class="code"><div class="bar"><strong>Terminal — execute uma linha por vez</strong><button class="copy" type="button">Copiar</button></div><pre><code>py --version
+py -m pip --version</code></pre></div><p>Se o comando py não existir, tente <code>python --version</code> e substitua py por python nas instruções. Se nenhum funcionar, instale Python pelo site oficial e reabra o VS Code. SQLite já acompanha a biblioteca padrão do Python: não instale um pacote chamado sqlite pelo pip.</p><p>Para o percurso alternativo, use <strong>Node.js 24.x</strong>, que dispõe de node:sqlite, e confira <code>node --version</code> e <code>npm --version</code>. Não precisa instalar Node para fazer o percurso Python.</p><p>Ferramentas opcionais: DB Browser for SQLite para visualizar tabelas; DevTools do navegador (F12) para inspecionar rede e console.</p><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="pastas"><h2>05 · Criar a pasta do projeto</h2><p>Crie uma pasta nova para o sistema dos alunos, separada dos manuais. Abra essa pasta no VS Code. No PowerShell:</p><div class="code"><div class="bar"><strong>Terminal — execute uma linha por vez</strong><button class="copy" type="button">Copiar</button></div><pre><code>mkdir cadastro-alunos
+cd cadastro-alunos
+mkdir public</code></pre></div><div class="code"><div class="bar"><strong>Estrutura do percurso Python</strong><button class="copy" type="button">Copiar</button></div><pre><code>cadastro-alunos/
+  app.py
+  requirements.txt
+  .gitignore
+  public/
+    index.html
+    style.css
+    script.js
+  cadastros.db       # criado automaticamente ao iniciar o backend
+  .venv/            # criado pelo comando de ambiente virtual</code></pre></div><p>Use exatamente esses nomes, inclusive <code>public</code>. O index.html deste manual é material de leitura. O <code>public/index.html</code> que você criará é a tela do sistema.</p><p>A pasta <a href="exemplo/public/index.html">exemplo/public</a> acompanha o manual para consulta dos arquivos, mas abrir seu HTML diretamente não liga um servidor. Execute o backend antes de usar o sistema.</p><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="ambiente"><h2>06 · Criar o ambiente Python</h2><p>Na raiz de cadastro-alunos, crie requirements.txt e .gitignore com estes conteúdos:</p><p>Copie o conteúdo completo, sem as marcações do manual. <a download href="exemplo/requirements.txt">Baixar requirements.txt</a></p><div class="code"><div class="bar"><strong>requirements.txt</strong><button class="copy" type="button">Copiar</button></div><pre><code>Flask&gt;=3.1,&lt;4
+</code></pre></div><p>Copie o conteúdo completo, sem as marcações do manual. <a download href="exemplo/.gitignore">Baixar .gitignore</a></p><div class="code"><div class="bar"><strong>.gitignore</strong><button class="copy" type="button">Copiar</button></div><pre><code>.venv/
+node_modules/
+__pycache__/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+</code></pre></div><div class="code"><div class="bar"><strong>Terminal — execute uma linha por vez</strong><button class="copy" type="button">Copiar</button></div><pre><code>py -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt</code></pre></div><p>Resultado esperado: instalação do Flask sem erro. Usaremos o executável do ambiente diretamente, sem ativação; isso evita problemas de política do PowerShell. Não copie a pasta .venv entre computadores.</p><details><summary>Linux e macOS</summary><div class="code"><div class="bar"><strong>Terminal — execute uma linha por vez</strong><button class="copy" type="button">Copiar</button></div><pre><code>python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python app.py</code></pre></div></details><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="banco"><h2>07 · Desenhar o banco e compreender SQL</h2><p>A tabela alunos tem uma linha por cadastro. <code>id</code> identifica o aluno; <code>email</code> não pode se repetir. <code>COLLATE NOCASE</code> ajuda a tratar diferenças de maiúsculas no e-mail ASCII. A aplicação também normaliza o e-mail para minúsculas.</p><div class="code"><div class="bar"><strong>SQL explicativo — o backend executará essas instruções</strong><button class="copy" type="button">Copiar</button></div><pre><code>CREATE TABLE IF NOT EXISTS alunos (
+  id INTEGER PRIMARY KEY,
+  nome TEXT NOT NULL CHECK(length(trim(nome)) BETWEEN 2 AND 80),
+  email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+  curso TEXT NOT NULL CHECK(length(trim(curso)) BETWEEN 2 AND 80)
+);
+
+INSERT INTO alunos (nome, email, curso) VALUES (?, ?, ?);
+SELECT id, nome, email, curso FROM alunos ORDER BY id DESC;</code></pre></div><p><strong>Não execute esse bloco no PowerShell.</strong> CREATE prepara a tabela sem apagá-la se já existir; INSERT grava; SELECT consulta. O id é atribuído pelo SQLite quando omitido. Não presuma numeração sem intervalos.</p><p>Os pontos de interrogação recebem parâmetros separados do texto SQL. Assim um nome como <code>Ana d'Ávila</code> continua sendo um valor. Não concatene os campos digitados em comandos SQL. O commit confirma a gravação; no Python o bloco <code>with banco</code> confirma ao terminar com sucesso e reverte em caso de erro.</p><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="backend"><h2>08 · Escrever o backend Python completo</h2><p>Copie o conteúdo completo, sem as marcações do manual. <a download href="exemplo/app.py">Baixar app.py</a></p><div class="code"><div class="bar"><strong>app.py</strong><button class="copy" type="button">Copiar</button></div><pre><code>from pathlib import Path
+import re
+import sqlite3
+from contextlib import closing
+from flask import Flask, jsonify, request
+
+BASE = Path(__file__).resolve().parent
+DATABASE = BASE / &#x27;cadastros.db&#x27;
+app = Flask(__name__, static_folder=&#x27;public&#x27;, static_url_path=&#x27;&#x27;)
+app.config[&#x27;MAX_CONTENT_LENGTH&#x27;] = 16 * 1024
+
+
+def conectar():
+    banco = sqlite3.connect(DATABASE)
+    banco.row_factory = sqlite3.Row
+    return banco
+
+
+def preparar_banco():
+    with closing(conectar()) as banco, banco:
+        banco.execute(&#x27;&#x27;&#x27;CREATE TABLE IF NOT EXISTS alunos (
+            id INTEGER PRIMARY KEY,
+            nome TEXT NOT NULL CHECK(length(trim(nome)) BETWEEN 2 AND 80),
+            email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+            curso TEXT NOT NULL CHECK(length(trim(curso)) BETWEEN 2 AND 80)
+        )&#x27;&#x27;&#x27;)
+
+
+@app.get(&#x27;/&#x27;)
+def inicio():
+    return app.send_static_file(&#x27;index.html&#x27;)
+
+
+@app.get(&#x27;/api/alunos&#x27;)
+def listar():
+    with closing(conectar()) as banco:
+        alunos = banco.execute(&#x27;SELECT id, nome, email, curso FROM alunos ORDER BY id DESC&#x27;).fetchall()
+    return jsonify([dict(aluno) for aluno in alunos])
+
+
+@app.post(&#x27;/api/alunos&#x27;)
+def cadastrar():
+    dados = request.get_json(silent=True)
+    if not isinstance(dados, dict):
+        return jsonify(erro=&#x27;Envie um objeto JSON válido.&#x27;), 400
+    if any(not isinstance(dados.get(campo), str) for campo in (&#x27;nome&#x27;, &#x27;email&#x27;, &#x27;curso&#x27;)):
+        return jsonify(erro=&#x27;Nome, e-mail e curso devem ser textos.&#x27;), 400
+    nome, email, curso = (dados[campo].strip() for campo in (&#x27;nome&#x27;, &#x27;email&#x27;, &#x27;curso&#x27;))
+    email = email.lower()
+    if not (2 &lt;= len(nome) &lt;= 80 and 2 &lt;= len(curso) &lt;= 80):
+        return jsonify(erro=&#x27;Nome e curso precisam ter de 2 a 80 caracteres.&#x27;), 400
+    if len(email) &gt; 120 or not re.fullmatch(r&#x27;[^\s@]+@[^\s@]+\.[^\s@]+&#x27;, email):
+        return jsonify(erro=&#x27;Informe um e-mail válido com até 120 caracteres.&#x27;), 400
+    try:
+        with closing(conectar()) as banco, banco:
+            cursor = banco.execute(&#x27;INSERT INTO alunos (nome, email, curso) VALUES (?, ?, ?)&#x27;,
+                                   (nome, email, curso))
+            aluno_id = cursor.lastrowid
+    except sqlite3.IntegrityError:
+        return jsonify(erro=&#x27;Este e-mail já está cadastrado.&#x27;), 409
+    return jsonify(id=aluno_id, nome=nome, email=email, curso=curso), 201
+
+
+@app.errorhandler(413)
+def muito_grande(erro):
+    return jsonify(erro=&#x27;O corpo da requisição excedeu o limite.&#x27;), 413
+
+
+if __name__ == &#x27;__main__&#x27;:
+    preparar_banco()
+    app.run(host=&#x27;127.0.0.1&#x27;, port=3000, debug=False)
+</code></pre></div><h3>Leia o código antes de seguir</h3><ul><li>Path fixa o caminho do banco ao lado de app.py, mesmo se o comando partir de outra pasta.</li><li>conectar cria uma conexão; closing garante seu fechamento.</li><li>preparar_banco cria a tabela na inicialização.</li><li>app.get e app.post associam funções às rotas HTTP.</li><li>get_json recebe o objeto enviado pelo navegador; a validação do servidor funciona mesmo sem o formulário.</li><li>jsonify transforma os dados em resposta JSON.</li><li>O bloco try trata a restrição de e-mail único; a transação evita gravação parcial.</li><li>public é a única pasta de arquivos estáticos. O arquivo .db fica fora dela.</li></ul><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="iniciar"><h2>09 · Iniciar e testar a API antes da tela</h2><div class="code"><div class="bar"><strong>Terminal — execute uma linha por vez</strong><button class="copy" type="button">Copiar</button></div><pre><code>.\.venv\Scripts\python.exe app.py</code></pre></div><p>Deixe o terminal aberto. O endereço será <a href="http://127.0.0.1:3000/api/alunos" target="_blank" rel="noopener">http://127.0.0.1:3000/api/alunos</a>. Abra no navegador: deve aparecer <code>[]</code> se o banco é novo. Confira também que cadastros.db apareceu ao lado de app.py.</p><p>Nesse momento, acessar / pode dar 404 se o HTML ainda não existe. Isso será resolvido ao criar o próximo arquivo. Para parar o servidor, pressione Ctrl+C no terminal. Não use dois backends na porta 3000 ao mesmo tempo.</p><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="html"><h2>10 · Criar o formulário HTML</h2><p>Copie o conteúdo completo, sem as marcações do manual. <a download href="exemplo/public/index.html">Baixar public/index.html</a></p><div class="code"><div class="bar"><strong>public/index.html</strong><button class="copy" type="button">Copiar</button></div><pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;pt-BR&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;title&gt;Cadastro de alunos&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;style.css&quot;&gt;
+  &lt;script src=&quot;script.js&quot; defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;main&gt;
+    &lt;header&gt;&lt;p class=&quot;tag&quot;&gt;MEU PRIMEIRO SISTEMA&lt;/p&gt;&lt;h1&gt;Cadastro de alunos&lt;/h1&gt;&lt;p&gt;Da tela ao banco de dados.&lt;/p&gt;&lt;/header&gt;
+    &lt;section aria-labelledby=&quot;titulo-form&quot;&gt;&lt;h2 id=&quot;titulo-form&quot;&gt;Novo aluno&lt;/h2&gt;
+      &lt;form id=&quot;cadastro&quot;&gt;
+        &lt;label for=&quot;nome&quot;&gt;Nome&lt;/label&gt;
+        &lt;input id=&quot;nome&quot; name=&quot;nome&quot; required minlength=&quot;2&quot; maxlength=&quot;80&quot; autocomplete=&quot;name&quot;&gt;
+        &lt;label for=&quot;email&quot;&gt;E-mail&lt;/label&gt;
+        &lt;input id=&quot;email&quot; name=&quot;email&quot; type=&quot;email&quot; required maxlength=&quot;120&quot; autocomplete=&quot;email&quot;&gt;
+        &lt;label for=&quot;curso&quot;&gt;Curso&lt;/label&gt;
+        &lt;input id=&quot;curso&quot; name=&quot;curso&quot; required minlength=&quot;2&quot; maxlength=&quot;80&quot;&gt;
+        &lt;button id=&quot;salvar&quot; type=&quot;submit&quot;&gt;Cadastrar aluno&lt;/button&gt;
+      &lt;/form&gt;
+      &lt;p id=&quot;mensagem&quot; role=&quot;status&quot; aria-live=&quot;polite&quot;&gt;&lt;/p&gt;
+    &lt;/section&gt;
+    &lt;section aria-labelledby=&quot;titulo-lista&quot;&gt;&lt;h2 id=&quot;titulo-lista&quot;&gt;Alunos cadastrados&lt;/h2&gt;
+      &lt;button type=&quot;button&quot; id=&quot;atualizar&quot;&gt;Atualizar lista&lt;/button&gt;
+      &lt;ul id=&quot;lista&quot;&gt;&lt;/ul&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre></div><p>Os atributos name determinam as chaves do JSON. label e for relacionam o nome do campo ao input. required, minlength e type=email ajudam o usuário; não substituem as verificações do backend. defer aguarda o HTML antes de executar o JavaScript. role=status permite anunciar mensagens.</p><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="css"><h2>11 · Estilizar com CSS</h2><p>Copie o conteúdo completo, sem as marcações do manual. <a download href="exemplo/public/style.css">Baixar public/style.css</a></p><div class="code"><div class="bar"><strong>public/style.css</strong><button class="copy" type="button">Copiar</button></div><pre><code>* { box-sizing: border-box; }
+body { margin: 0; background: #edf2f7; color: #20324a; font: 16px/1.6 system-ui, sans-serif; }
+main { max-width: 760px; margin: auto; padding: 32px 18px; }
+header { margin-bottom: 24px; }
+h1 { font-size: clamp(28px, 6vw, 42px); line-height: 1.2; }
+h2 { margin-top: 0; }
+.tag { color: #176254; font-size: 12px; font-weight: bold; letter-spacing: 2px; }
+section { padding: 24px; margin-bottom: 20px; background: white; border-radius: 14px; border: 1px solid #d5dfeb; }
+form { display: grid; gap: 8px; }
+label { font-weight: 600; }
+input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #8293a7; border-radius: 6px; font: inherit; }
+button { padding: 12px 18px; background: #176254; color: white; border: 0; border-radius: 6px; font: inherit; cursor: pointer; }
+button:disabled { opacity: .6; cursor: wait; }
+:focus-visible { outline: 3px solid #d28a21; outline-offset: 3px; }
+ul { padding: 0; list-style: none; }
+li { padding: 14px 0; border-bottom: 1px solid #d5dfeb; overflow-wrap: anywhere; }
+#mensagem { min-height: 26px; font-weight: 600; }
+#mensagem[data-erro=&quot;true&quot;] { color: #aa2525; }
+</code></pre></div><p>O layout usa uma coluna com largura máxima e margens automáticas. box-sizing inclui bordas no cálculo das dimensões. O foco visível ajuda na navegação com teclado. Reduza a janela e verifique se os campos continuam cabendo.</p><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="javascript"><h2>12 · Conectar o frontend à API</h2><p>Copie o conteúdo completo, sem as marcações do manual. <a download href="exemplo/public/script.js">Baixar public/script.js</a></p><div class="code"><div class="bar"><strong>public/script.js</strong><button class="copy" type="button">Copiar</button></div><pre><code>const form = document.querySelector(&#x27;#cadastro&#x27;);
+const lista = document.querySelector(&#x27;#lista&#x27;);
+const mensagem = document.querySelector(&#x27;#mensagem&#x27;);
+const salvar = document.querySelector(&#x27;#salvar&#x27;);
+
+function avisar(texto, erro = false) {
+  mensagem.textContent = texto;
+  mensagem.dataset.erro = String(erro);
+}
+
+async function listar() {
+  const resposta = await fetch(&#x27;/api/alunos&#x27;);
+  if (!resposta.ok) throw new Error(&#x27;Não foi possível carregar a lista.&#x27;);
+  const alunos = await resposta.json();
+  lista.replaceChildren();
+  if (alunos.length === 0) {
+    const item = document.createElement(&#x27;li&#x27;);
+    item.textContent = &#x27;Nenhum aluno cadastrado ainda.&#x27;;
+    lista.append(item);
+  }
+  for (const aluno of alunos) {
+    const item = document.createElement(&#x27;li&#x27;);
+    item.textContent = `${aluno.nome} — ${aluno.email} — ${aluno.curso}`;
+    lista.append(item);
+  }
+}
+
+form.addEventListener(&#x27;submit&#x27;, async (evento) =&gt; {
+  evento.preventDefault();
+  if (salvar.disabled) return;
+  salvar.disabled = true;
+  avisar(&#x27;Salvando…&#x27;);
+  try {
+    const dados = Object.fromEntries(new FormData(form));
+    const resposta = await fetch(&#x27;/api/alunos&#x27;, {
+      method: &#x27;POST&#x27;,
+      headers: { &#x27;Content-Type&#x27;: &#x27;application/json&#x27; },
+      body: JSON.stringify(dados),
+    });
+    const resultado = await resposta.json();
+    if (!resposta.ok) throw new Error(resultado.erro || &#x27;Não foi possível cadastrar.&#x27;);
+    form.reset();
+    avisar(&#x27;Aluno cadastrado com sucesso!&#x27;);
+    try { await listar(); }
+    catch { avisar(&#x27;Cadastro salvo, mas a lista não atualizou. Clique em Atualizar lista.&#x27;, true); }
+  } catch (erro) {
+    avisar(erro.message || &#x27;Confira se o servidor está ligado.&#x27;, true);
+  } finally {
+    salvar.disabled = false;
+  }
+});
+
+document.querySelector(&#x27;#atualizar&#x27;).addEventListener(&#x27;click&#x27;, () =&gt; {
+  listar().then(() =&gt; avisar(&#x27;Lista atualizada.&#x27;)).catch(erro =&gt; avisar(erro.message, true));
+});
+listar().catch(() =&gt; avisar(&#x27;Não foi possível carregar. Confira se o servidor está ligado.&#x27;, true));
+</code></pre></div><h3>Como o envio funciona</h3><ol><li>submit dispara quando o formulário é enviado; preventDefault impede a navegação padrão.</li><li>FormData coleta os campos e Object.fromEntries monta um objeto.</li><li>JSON.stringify transforma o objeto em texto JSON.</li><li>fetch envia POST e Content-Type informa o formato ao servidor.</li><li>await aguarda cada resposta; resposta.ok verifica códigos de sucesso. fetch não lança erro automaticamente em um HTTP 400 ou 409.</li><li>Ao receber 201, o formulário limpa e a lista é consultada novamente.</li><li>textContent exibe os nomes como texto, sem interpretar HTML digitado pelo usuário.</li><li>finally reabilita o botão mesmo se ocorrer uma falha.</li></ol><p>O endereço relativo /api/alunos usa o mesmo servidor que entregou o HTML. Assim não precisamos de CORS nem de duas portas. Não abra esta tela por file:// ou Live Server.</p><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="usar"><h2>13 · Executar o sistema completo</h2><ol><li>Salve todos os arquivos. Se o servidor já estiver ligado, mantenha-o; se alterou app.py, pare e inicie novamente.</li><li>Abra <a href="http://127.0.0.1:3000" target="_blank" rel="noopener">http://127.0.0.1:3000</a>.</li><li>Cadastre Ana Souza, ana@example.com, Sistemas de Informação.</li><li>Confira a mensagem de sucesso e o aluno na lista.</li><li>Recarregue a página: o aluno deve continuar.</li><li>Cadastre outro aluno usando outro e-mail.</li></ol><div class="note">GitHub Pages pode hospedar este manual e os arquivos de exemplo. Ele não executa Python, Node nem o banco SQLite do sistema. O sistema desta aula roda localmente na máquina de cada aluno.</div><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="inspecionar"><h2>14 · Ver a comunicação e inspecionar o banco</h2><p>Pressione F12 → Rede/Network. Cadastre um aluno com e-mail novo e selecione a requisição POST /api/alunos:</p><ul><li>Request/Payload: veja nome, email e curso no JSON.</li><li>Status: 201 Created.</li><li>Response: objeto do aluno com id.</li><li>Em seguida, GET /api/alunos retorna 200 e a lista.</li></ul><p>Em um segundo terminal PowerShell, na raiz do projeto:</p><div class="code"><div class="bar"><strong>Terminal — execute uma linha por vez</strong><button class="copy" type="button">Copiar</button></div><pre><code>Invoke-RestMethod http://127.0.0.1:3000/api/alunos
+$aluno = @{ nome = &quot;Bruno Lima&quot;; email = &quot;bruno@example.com&quot;; curso = &quot;Computação&quot; } | ConvertTo-Json
+Invoke-RestMethod -Uri http://127.0.0.1:3000/api/alunos -Method Post -ContentType &quot;application/json; charset=utf-8&quot; -Body ([System.Text.Encoding]::UTF8.GetBytes($aluno))</code></pre></div><p>Repetir o segundo envio deve retornar erro 409: isso é um teste de duplicidade, não uma instalação quebrada.</p><h3>Conferir o arquivo SQLite com Python</h3><div class="code"><div class="bar"><strong>Opcional: crie consultar.py na raiz do sistema</strong><button class="copy" type="button">Copiar</button></div><pre><code>import sqlite3
+from pathlib import Path
+
+caminho = Path(__file__).resolve().parent / &quot;cadastros.db&quot;
+conexao = sqlite3.connect(f&quot;{caminho.as_uri()}?mode=ro&quot;, uri=True)
+try:
+    for linha in conexao.execute(&quot;SELECT id, nome, email, curso FROM alunos&quot;):
+        print(linha)
+finally:
+    conexao.close()</code></pre></div><div class="code"><div class="bar"><strong>Terminal — execute uma linha por vez</strong><button class="copy" type="button">Copiar</button></div><pre><code>.\.venv\Scripts\python.exe consultar.py</code></pre></div><p>O modo somente leitura falha se o banco não existe, evitando criar um arquivo vazio no caminho errado. Como alternativa, abra cadastros.db no DB Browser e use Browse Data. Feche transações de edição antes de continuar os testes.</p><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="testes"><h2>15 · Checklist de funcionamento e persistência</h2><ul class="checks"><li><label><input type="checkbox"> API vazia retorna [] antes do primeiro cadastro.</label></li><li><label><input type="checkbox"> Cadastro válido aparece na tela e recebe id.</label></li><li><label><input type="checkbox"> Campo vazio é bloqueado no formulário.</label></li><li><label><input type="checkbox"> Envio direto de JSON com nome vazio recebe 400.</label></li><li><label><input type="checkbox"> E-mail repetido recebe 409 sem criar outra linha.</label></li><li><label><input type="checkbox"> Nome com apóstrofo é salvo corretamente.</label></li><li><label><input type="checkbox"> Texto como &lt;b&gt;Ana&lt;/b&gt; aparece como texto na lista.</label></li><li><label><input type="checkbox"> Depois de Ctrl+C e reiniciar o backend, os dados permanecem.</label></li><li><label><input type="checkbox"> O mesmo cadastro pode ser confirmado no arquivo SQLite.</label></li><li><label><input type="checkbox"> Tab percorre os campos; Enter envia o formulário.</label></li></ul><p>Para testar validação sem depender do HTML, envie pelo PowerShell um objeto com nome vazio ou troque nome por um número. Aguarde HTTP 400. Registre resultado esperado e observado; não basta uma captura da página aberta.</p><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="node"><h2>16 · Alternativa completa: backend Node.js</h2><p>Use esta seção se optar por Node no lugar de Python. Preserve os mesmos arquivos de public e .gitignore. Não é necessário executar app.py, instalar Flask ou criar .venv. Instale Node <strong>24.x</strong>, confira sua versão e crie server.cjs na raiz. A extensão cjs permite usar require independentemente do tipo configurado no package.json.</p><div class="code"><div class="bar"><strong>Terminal — execute uma linha por vez</strong><button class="copy" type="button">Copiar</button></div><pre><code>node --version
+npm.cmd --version
+npm.cmd init -y
+npm.cmd install express@5</code></pre></div><p>npm.cmd é útil no PowerShell quando a execução de npm.ps1 está bloqueada. No Linux/macOS, use npm. O comando init cria package.json; install cria node_modules e package-lock.json. O SQLite vem de node:sqlite; não instale sqlite3 para este exemplo.</p><p>Copie o conteúdo completo, sem as marcações do manual. <a download href="exemplo/server.cjs">Baixar server.cjs</a></p><div class="code"><div class="bar"><strong>server.cjs</strong><button class="copy" type="button">Copiar</button></div><pre><code>const express = require(&#x27;express&#x27;);
+const path = require(&#x27;node:path&#x27;);
+const { DatabaseSync } = require(&#x27;node:sqlite&#x27;);
+const app = express();
+const db = new DatabaseSync(path.join(__dirname, &#x27;cadastros.db&#x27;));
+db.exec(`CREATE TABLE IF NOT EXISTS alunos (
+  id INTEGER PRIMARY KEY,
+  nome TEXT NOT NULL CHECK(length(trim(nome)) BETWEEN 2 AND 80),
+  email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+  curso TEXT NOT NULL CHECK(length(trim(curso)) BETWEEN 2 AND 80)
+)`);
+app.use(express.json({ limit: &#x27;16kb&#x27; }));
+app.use(express.static(path.join(__dirname, &#x27;public&#x27;)));
+app.get(&#x27;/api/alunos&#x27;, (req, res) =&gt; {
+  res.json(db.prepare(&#x27;SELECT id, nome, email, curso FROM alunos ORDER BY id DESC&#x27;).all());
+});
+app.post(&#x27;/api/alunos&#x27;, (req, res) =&gt; {
+  const dados = req.body;
+  if (!dados || [&#x27;nome&#x27;, &#x27;email&#x27;, &#x27;curso&#x27;].some(campo =&gt; typeof dados[campo] !== &#x27;string&#x27;)) {
+    return res.status(400).json({ erro: &#x27;Nome, e-mail e curso devem ser textos.&#x27; });
+  }
+  const nome = dados.nome.trim();
+  const email = dados.email.trim().toLowerCase();
+  const curso = dados.curso.trim();
+  if (nome.length &lt; 2 || nome.length &gt; 80 || curso.length &lt; 2 || curso.length &gt; 80) {
+    return res.status(400).json({ erro: &#x27;Nome e curso precisam ter de 2 a 80 caracteres.&#x27; });
+  }
+  if (email.length &gt; 120 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ erro: &#x27;Informe um e-mail válido com até 120 caracteres.&#x27; });
+  }
+  try {
+    const resultado = db.prepare(&#x27;INSERT INTO alunos (nome, email, curso) VALUES (?, ?, ?)&#x27;).run(nome, email, curso);
+    res.status(201).json({ id: Number(resultado.lastInsertRowid), nome, email, curso });
+  } catch (erro) {
+    if (erro.code?.startsWith(&#x27;ERR_SQLITE&#x27;) &amp;&amp; erro.message.includes(&#x27;UNIQUE&#x27;)) {
+      return res.status(409).json({ erro: &#x27;Este e-mail já está cadastrado.&#x27; });
+    }
+    throw erro;
+  }
+});
+app.use((erro, req, res, next) =&gt; {
+  if (erro.type === &#x27;entity.parse.failed&#x27;) return res.status(400).json({ erro: &#x27;JSON inválido.&#x27; });
+  if (erro.type === &#x27;entity.too.large&#x27;) return res.status(413).json({ erro: &#x27;Corpo muito grande.&#x27; });
+  console.error(erro);
+  res.status(500).json({ erro: &#x27;Erro interno. Confira o terminal do servidor.&#x27; });
+});
+app.listen(3000, &#x27;127.0.0.1&#x27;, () =&gt; console.log(&#x27;Abra http://127.0.0.1:3000&#x27;));
+</code></pre></div><div class="code"><div class="bar"><strong>Terminal — execute uma linha por vez</strong><button class="copy" type="button">Copiar</button></div><pre><code>node server.cjs</code></pre></div><p>Abra o mesmo endereço http://127.0.0.1:3000. Repita todos os testes da seção anterior. Pare Python antes de iniciar Node. Os dois usam o mesmo cadastros.db quando os arquivos estão na mesma pasta; isso permite comparar implementações sem apagar os registros.</p><p>DatabaseSync executa operações síncronas: é uma escolha simples para uma aula local com poucos dados. As consultas usam prepare e parâmetros; Express recebe JSON e serve public. O middleware final converte erros em respostas JSON.</p><p>Ao retomar em outro computador, leve package.json e package-lock.json e execute npm.cmd ci. Não envie node_modules nem um banco contendo dados pessoais ao repositório.</p><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="erros"><h2>17 · Diagnosticar os erros mais comuns</h2><div class="table-scroll"><table><tr><th>Sintoma</th><th>O que conferir</th></tr><tr><td>Connection refused / site não abre</td><td>Backend precisa ficar executando no terminal; abra a porta 3000 indicada.</td></tr><tr><td>Failed to fetch / JSON inesperado</td><td>Use http://127.0.0.1:3000, não file://, Live Server ou o endereço do manual.</td></tr><tr><td>No module named flask</td><td>Instale e execute usando o mesmo Python da .venv.</td></tr><tr><td>Arquivo não encontrado</td><td>Terminal deve estar na pasta do projeto. Confira app.py e public/index.html; evite index.html.txt.</td></tr><tr><td>404 no CSS/JS</td><td>Confira style.css e script.js dentro de public e veja Rede no navegador.</td></tr><tr><td>Address already in use / EADDRINUSE</td><td>Pare o outro servidor com Ctrl+C. Python e Node são alternativas na mesma porta.</td></tr><tr><td>409 ao cadastrar</td><td>O e-mail já existe. Use outro ou apenas consulte os dados.</td></tr><tr><td>400 ao cadastrar</td><td>Confira tipos, espaços, limites e formato de e-mail; leia a mensagem JSON.</td></tr><tr><td>database is locked</td><td>Feche transações pendentes no visualizador; evite editar o banco durante o teste.</td></tr><tr><td>Dados desapareceram</td><td>Confira se iniciou outra cópia do projeto e qual arquivo .db está ao lado do backend.</td></tr><tr><td>node:sqlite não encontrado</td><td>Confira node --version. Esta alternativa foi escrita para Node 24.x.</td></tr><tr><td>Alterei o código, mas nada mudou</td><td>Salve, reinicie o backend se necessário e recarregue com Ctrl+F5.</td></tr></table></div><p>Procedimento: leia primeiro o erro no terminal, depois Console e Rede do navegador. Identifique se a falha ocorre na tela, no HTTP ou no SQL antes de alterar o código.</p><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="desafio"><h2>18 · Atividade, desafios e entrega</h2><h3>Atividade principal</h3><p>Personalize o sistema para cadastro de participantes de uma oficina. Mude textos, cores e exemplos sem quebrar o contrato nome/email/curso. Cadastre três registros fictícios e demonstre a persistência.</p><h3>Desafios progressivos</h3><ol><li>Adicionar contador de alunos usando o tamanho da lista.</li><li>Filtrar os alunos na tela por nome usando os dados já consultados.</li><li>Adicionar telefone: atualizar HTML, validação, SQL e resposta. Uma tabela existente não ganha a coluna só por alterar CREATE TABLE IF NOT EXISTS: planeje uma migração com ALTER TABLE e backup.</li><li>Implementar DELETE /api/alunos/:id com confirmação e DELETE FROM alunos WHERE id = ?. Validar id e retornar 404 se não existir.</li><li>Implementar edição com PUT, validar os mesmos campos e atualizar com WHERE id = ?. Testar duplicidade e registro inexistente.</li></ol><h3>Entrega</h3><p>Entregue public com os três arquivos, o backend escolhido e os arquivos de dependências correspondentes. Inclua README com como instalar, iniciar, abrir e testar. Não entregue .venv, node_modules ou dados pessoais reais. Anexe evidências de cadastro, erro de duplicidade e persistência após reinício.</p><table><tr><th>Critério</th><th>Pontos</th></tr><tr><td>Formulário acessível e CSS adaptável</td><td>2</td></tr><tr><td>JavaScript integra POST e GET e trata erros</td><td>2</td></tr><tr><td>Backend valida e responde com status adequados</td><td>2</td></tr><tr><td>SQLite grava com parâmetros e persiste após reinício</td><td>2</td></tr><tr><td>Explicação do fluxo e evidências de testes</td><td>2</td></tr></table><p>Explique com suas palavras: por que o frontend não acessa diretamente o banco? O que muda entre 200, 201, 400 e 409? Por que validar no servidor? Onde está o commit? Qual arquivo precisa continuar existindo para preservar os registros?</p><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="retomar"><h2>19 · Encerrar e retomar com segurança</h2><p>Encerre o backend com Ctrl+C. Para retomar, abra a mesma pasta, execute o comando de inicialização e visite a porta 3000. Não recrie o banco: a tabela já existe e os registros serão consultados.</p><p>Este exemplo é local e didático. Antes de publicar um sistema real, será necessário projetar autenticação e autorização, proteção dos dados, HTTPS, backups, implantação do backend e armazenamento persistente. O servidor Flask desta aula é de desenvolvimento. Não mova cadastros.db para public.</p><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section><section id="referencias"><h2>20 · Referências oficiais</h2><ul><li><a href="https://developer.mozilla.org/pt-BR/docs/Web/HTML/Element/form">MDN: formulários HTML</a></li><li><a href="https://developer.mozilla.org/pt-BR/docs/Web/API/Fetch_API/Using_Fetch">MDN: uso de fetch</a></li><li><a href="https://flask.palletsprojects.com/en/stable/tutorial/database/">Flask: conexão e banco de dados</a></li><li><a href="https://docs.python.org/3/library/sqlite3.html">Python: sqlite3, parâmetros e transações</a></li><li><a href="https://nodejs.org/download/release/latest-v24.x/docs/api/sqlite.html">Node 24: node:sqlite e DatabaseSync</a></li><li><a href="https://expressjs.com/en/5x/api.html">Express 5: API</a></li><li><a href="https://www.sqlite.org/lang.html">SQLite: linguagem SQL</a></li></ul><p>Material preparado para a aula de 23 de outubro de 2026. As instruções usam Python/Flask no percurso principal e Node 24/Express 5 no alternativo.</p><a class="back" href="#sumario">Voltar ao roteiro ↑</a></section></main><footer>INBEC · Projetos de frontend, backend e banco de dados</footer><div id="status" role="status" aria-live="polite"></div><script>document.querySelector('#print').addEventListener('click',()=>window.print());document.querySelectorAll('.copy').forEach(button=>button.addEventListener('click',async()=>{const text=button.closest('.code').querySelector('code').textContent;const status=document.querySelector('#status');try{await navigator.clipboard.writeText(text);status.textContent='Código copiado.';}catch{status.textContent='Selecione o código do bloco e use Ctrl+C (ou Cmd+C).';}setTimeout(()=>status.textContent='',5000);}));</script></body></html>
